@@ -69,6 +69,8 @@ public class DBTokenManager extends AbstractTokenManager {
         String sql = String.format("select %s from %s where %s = ? and %s > ? limit 1", keyColumnName, tableName, tokenColumnName, expireAtColumnName);
         List<String> keys = jdbcTemplate.queryForList(sql, new Object[]{token, new Timestamp(System.currentTimeMillis())}, String.class);
         if (keys.size() > 0) {
+            String flushExpireAtSql = String.format("update %s set %s = ? where %s = ?", tableName, expireAtColumnName, tokenColumnName);
+            jdbcTemplate.update(flushExpireAtSql, new Object[]{new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), token});
             return keys.get(0);
         }
         return null;

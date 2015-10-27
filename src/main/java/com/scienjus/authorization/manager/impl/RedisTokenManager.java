@@ -1,5 +1,6 @@
 package com.scienjus.authorization.manager.impl;
 
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.concurrent.TimeUnit;
@@ -15,8 +16,8 @@ public class RedisTokenManager extends AbstractTokenManager {
 
     protected StringRedisTemplate redis;
 
-    public void setRedis(StringRedisTemplate redis) {
-        this.redis = redis;
+    public void setRedis(JedisConnectionFactory redis) {
+        this.redis = new StringRedisTemplate(redis);
     }
 
     @Override

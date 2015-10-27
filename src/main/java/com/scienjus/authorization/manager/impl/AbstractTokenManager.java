@@ -8,7 +8,7 @@ import com.scienjus.authorization.manager.TokenManager;
  */
 public abstract class AbstractTokenManager implements TokenManager {
 
-    protected long tokenExpireSeconds;
+    protected long tokenExpireSeconds = 3600;
 
     public void setTokenExpireSeconds(long tokenExpireSeconds) {
         this.tokenExpireSeconds = tokenExpireSeconds;
