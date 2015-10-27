@@ -68,6 +68,8 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
             response.getWriter().close();
             return false;
         }
+        //为了防止以某种直接在REQUEST_CURRENT_KEY写入key，将其设为null
+        request.setAttribute(REQUEST_CURRENT_KEY, null);
         return true;
     }
 }

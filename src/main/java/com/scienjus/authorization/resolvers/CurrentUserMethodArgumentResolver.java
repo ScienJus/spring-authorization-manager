@@ -57,7 +57,10 @@ public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentR
             if (userModel != null) {
                 return userModel;
             }
+            //有key但是得不到用户，抛出异常
+            throw new MissingServletRequestPartException(AuthorizationInterceptor.REQUEST_CURRENT_KEY);
         }
-        throw new MissingServletRequestPartException(AuthorizationInterceptor.REQUEST_CURRENT_KEY);
+        //没有key就直接返回null
+        return null;
     }
 }
