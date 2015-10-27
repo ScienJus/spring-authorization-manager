@@ -20,9 +20,9 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     public static final String REQUEST_CURRENT_KEY = "REQUEST_CURRENT_KEY";
 
     private TokenManager manager;
-    private String httpHeaderName;
-    private String httpHeaderPrefix;
-    private String unauthorizedErrorMessage;
+    private String httpHeaderName = "Authorization";
+    private String httpHeaderPrefix = "";
+    private String unauthorizedErrorMessage = "401 unauthorized";
 
     public void setManager(TokenManager manager) {
         this.manager = manager;
@@ -49,7 +49,8 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Method method = handlerMethod.getMethod();
         //从header中得到token
-        String token = request.getHeader(httpHeaderName);
+        String authorization = request.getHeader(httpHeaderName);
+        String token = manager.decodeToken(authorization);
         if (token != null && token.startsWith(httpHeaderPrefix) && token.length() > 0) {
             token = token.substring(httpHeaderPrefix.length());
             //验证token

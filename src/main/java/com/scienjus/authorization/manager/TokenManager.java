@@ -14,4 +14,6 @@ public interface TokenManager {
     void createRelationship(String key, String token);
 
     String getKey(String token);
+
+    String decodeToken(String baseToken);
 }

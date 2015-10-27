@@ -1,6 +1,5 @@
 package com.scienjus.authorization.manager.impl;
 
-import com.scienjus.authorization.manager.TokenManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -11,15 +10,14 @@ import java.util.List;
  * @author XieEnlong
  * @date 2015/10/27.
  */
-public class DBTokenManager implements TokenManager {
+public class DBTokenManager extends AbstractTokenManager {
 
-    private JdbcTemplate jdbcTemplate;
+    protected JdbcTemplate jdbcTemplate;
 
-    private String tableName;
-    private String keyColumnName;
-    private String tokenColumnName;
-    private String expireAtColumnName;
-    private long tokenExpireSeconds;
+    protected String tableName;
+    protected String keyColumnName;
+    protected String tokenColumnName;
+    protected String expireAtColumnName;
 
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new JdbcTemplate(dataSource);
@@ -39,10 +37,6 @@ public class DBTokenManager implements TokenManager {
 
     public void setExpireAtColumnName(String expireAtColumnName) {
         this.expireAtColumnName = expireAtColumnName;
-    }
-
-    public void setTokenExpireSeconds(long tokenExpireSeconds) {
-        this.tokenExpireSeconds = tokenExpireSeconds;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.scienjus.authorization.manager.impl;
 
-import com.scienjus.authorization.manager.TokenManager;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.concurrent.TimeUnit;
@@ -9,21 +8,15 @@ import java.util.concurrent.TimeUnit;
  * @author XieEnlong
  * @date 2015/10/26.
  */
-public class RedisTokenManager implements TokenManager {
+public class RedisTokenManager extends AbstractTokenManager {
 
     private static final String REDIS_KEY_PREFIX = "AUTHORIZATION_KEY_";
     private static final String REDIS_TOKEN_PREFIX = "AUTHORIZATION_TOKEN_";
 
-    private StringRedisTemplate redis;
-
-    private long tokenExpireSeconds;
+    protected StringRedisTemplate redis;
 
     public void setRedis(StringRedisTemplate redis) {
         this.redis = redis;
-    }
-
-    public void setTokenExpireSeconds(long tokenExpireSeconds) {
-        this.tokenExpireSeconds = tokenExpireSeconds;
     }
 
     @Override
