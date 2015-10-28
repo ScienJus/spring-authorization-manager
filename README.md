@@ -9,7 +9,18 @@
 
 ###使用方法
 
-这个库的所有依赖库，我相信大部分库已经存在于你的项目中了：
+由于这个库还没有提交到Maven的中央仓库，所以需要手动将其导入到你的私人仓库中，jar包可以在`/lib`文件夹下找到，或者下载源码使用`mvn package`打包。
+
+```
+mvn install:install-file  
+-DgroupId=com.scienjus
+-DartifactId=spring-authorization-manager
+-Dversion=1.0-SNAPSHOT
+-Dpackaging=jar  
+-Dfile=/path/to/jar/spring-authorization-manager.jar
+```
+
+所有依赖库，我相信大部分库已经存在于你的项目中了：
 
 ```
 <dependencies>
