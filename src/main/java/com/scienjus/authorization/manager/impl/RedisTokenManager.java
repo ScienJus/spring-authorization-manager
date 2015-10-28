@@ -27,8 +27,10 @@ public class RedisTokenManager extends AbstractTokenManager {
             throw new MethodNotSupportException("非单点登录时无法调用该方法");
         }
         String token = getToken(key);
-        redis.delete(formatKey(key));
-        redis.delete(formatToken(token));
+        if (token != null) {
+            redis.delete(formatKey(key));
+            redis.delete(formatToken(token));
+        }
     }
 
     @Override
