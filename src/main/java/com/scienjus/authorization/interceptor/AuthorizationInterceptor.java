@@ -50,7 +50,8 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         Method method = handlerMethod.getMethod();
         //从header中得到token
         String authorization = request.getHeader(httpHeaderName);
-        String token = manager.decodeToken(authorization);
+        //在这个方法中可以对得到的authorization进行一些验证，例如时间戳，URL签名等
+        String token = manager.decodeToken(authorization, request);
         if (token != null && token.startsWith(httpHeaderPrefix) && token.length() > 0) {
             token = token.substring(httpHeaderPrefix.length());
             //验证token
