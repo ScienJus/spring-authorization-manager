@@ -10,8 +10,20 @@ public abstract class AbstractTokenManager implements TokenManager {
 
     protected long tokenExpireSeconds = 3600;
 
+    protected boolean singleSignOn = true;
+
+    protected boolean flushExpireAfterOperate = true;
+
     public void setTokenExpireSeconds(long tokenExpireSeconds) {
         this.tokenExpireSeconds = tokenExpireSeconds;
+    }
+
+    public void setSingleSignOn(boolean singleSignOn) {
+        this.singleSignOn = singleSignOn;
+    }
+
+    public void setFlushExpireAfterOperate(boolean flushExpireAfterOperate) {
+        this.flushExpireAfterOperate = flushExpireAfterOperate;
     }
 
     @Override

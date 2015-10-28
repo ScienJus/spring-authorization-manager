@@ -1,5 +1,6 @@
 package com.scienjus.authorization.manager.impl;
 
+import com.scienjus.authorization.exception.MethodNotSupportException;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -22,6 +23,9 @@ public class RedisTokenManager extends AbstractTokenManager {
 
     @Override
     public void delRelationshipByKey(String key) {
+        if (!singleSignOn) {
+            throw new MethodNotSupportException("非单点登录时无法调用该方法");
+        }
         String token = getToken(key);
         redis.delete(formatKey(key));
         redis.delete(formatToken(token));
@@ -29,14 +33,18 @@ public class RedisTokenManager extends AbstractTokenManager {
 
     @Override
     public void delRelationshipByToken(String token) {
-        String key = getKey(token);
-        redis.delete(formatKey(key));
+        if (singleSignOn) {
+            String key = getKey(token);
+            redis.delete(formatKey(key));
+        }
         redis.delete(formatToken(token));
     }
 
     @Override
     public void createRelationship(String key, String token) {
-        redis.boundValueOps(formatKey(key)).set(token, tokenExpireSeconds, TimeUnit.SECONDS);
+        if (singleSignOn) {
+            redis.boundValueOps(formatKey(key)).set(token, tokenExpireSeconds, TimeUnit.SECONDS);
+        }
         redis.boundValueOps(formatToken(token)).set(key, tokenExpireSeconds, TimeUnit.SECONDS);
     }
 
@@ -47,8 +55,12 @@ public class RedisTokenManager extends AbstractTokenManager {
         }
         String key = redis.boundValueOps(formatToken(token)).get();
         if (key != null) {
-            redis.expire(formatKey(key), tokenExpireSeconds, TimeUnit.SECONDS);
-            redis.expire(formatToken(token), tokenExpireSeconds, TimeUnit.SECONDS);
+            if (singleSignOn) {
+                redis.expire(formatKey(key), tokenExpireSeconds, TimeUnit.SECONDS);
+            }
+            if (flushExpireAfterOperate) {
+                redis.expire(formatToken(token), tokenExpireSeconds, TimeUnit.SECONDS);
+            }
         }
         return key;
     }
