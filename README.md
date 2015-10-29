@@ -72,11 +72,6 @@ mvn install:install-file
     <artifactId>commons-dbcp</artifactId>
     <version>1.4</version>
   </dependency>
-  <dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-jdbc</artifactId>
-    <version>4.2.2.RELEASE</version>
-  </dependency>
 </dependencies>
 ```
 

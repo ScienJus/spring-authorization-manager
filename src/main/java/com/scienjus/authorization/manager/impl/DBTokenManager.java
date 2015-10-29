@@ -1,11 +1,9 @@
 package com.scienjus.authorization.manager.impl;
 
 import com.scienjus.authorization.exception.MethodNotSupportException;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.sql.Timestamp;
-import java.util.List;
+import java.sql.*;
 
 /**
  * @author XieEnlong
@@ -13,7 +11,7 @@ import java.util.List;
  */
 public class DBTokenManager extends AbstractTokenManager {
 
-    protected JdbcTemplate jdbcTemplate;
+    protected DataSource dataSource;
 
     protected String tableName;
     protected String keyColumnName;
@@ -21,7 +19,7 @@ public class DBTokenManager extends AbstractTokenManager {
     protected String expireAtColumnName;
 
     public void setDataSource(DataSource dataSource) {
-        jdbcTemplate = new JdbcTemplate(dataSource);
+        this.dataSource = dataSource;
     }
 
     public void setTableName(String tableName) {
@@ -46,29 +44,29 @@ public class DBTokenManager extends AbstractTokenManager {
             throw new MethodNotSupportException("非单点登录时无法调用该方法");
         }
         String sql = String.format("delete from %s where %s = ?", tableName, keyColumnName);
-        jdbcTemplate.update(sql, new Object[]{key});
+        update(sql, key);
     }
 
     @Override
     public void delRelationshipByToken(String token) {
         String sql = String.format("delete from %s where %s = ?", tableName, tokenColumnName);
-        jdbcTemplate.update(sql, new Object[]{token});
+        update(sql, token);
     }
 
     @Override
     public void createRelationship(String key, String token) {
         if (!singleSignOn) {
             String sql = String.format("insert into %s (%s, %s, %s) values(?, ?, ?)", tableName, keyColumnName, tokenColumnName, expireAtColumnName);
-            jdbcTemplate.update(sql, new Object[]{key, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000)});
+            update(sql, key, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000));
         } else {
             String select = String.format("select count(*) from %s where %s = ?", tableName, keyColumnName);
-            int count = jdbcTemplate.queryForObject(select, new Object[]{key}, Integer.class);
-            if (count > 0) {
+            Number count = query(Number.class, select, key);
+            if (count.intValue() > 0) {
                 String sql = String.format("update %s set %s = ?, %s = ? where %s = ?", tableName, tokenColumnName, expireAtColumnName, keyColumnName);
-                jdbcTemplate.update(sql, new Object[]{token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), key});
+                update(sql, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), key);
             } else {
                 String sql = String.format("insert into %s (%s, %s, %s) values(?, ?, ?)", tableName, keyColumnName, tokenColumnName, expireAtColumnName);
-                jdbcTemplate.update(sql, new Object[]{key, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000)});
+                update(sql, key, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000));
             }
         }
     }
@@ -76,13 +74,46 @@ public class DBTokenManager extends AbstractTokenManager {
     @Override
     public String getKey(String token) {
         String sql = String.format("select %s from %s where %s = ? and %s > ? limit 1", keyColumnName, tableName, tokenColumnName, expireAtColumnName);
-        List<String> keys = jdbcTemplate.queryForList(sql, new Object[]{token, new Timestamp(System.currentTimeMillis())}, String.class);
-        if (keys.size() > 0) {
+        String key = query(String.class, sql, token, new Timestamp(System.currentTimeMillis()));
+        if (key != null) {
             if (flushExpireAfterOperate) {
                 String flushExpireAtSql = String.format("update %s set %s = ? where %s = ?", tableName, expireAtColumnName, tokenColumnName);
-                jdbcTemplate.update(flushExpireAtSql, new Object[]{new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), token});
+                update(flushExpireAtSql, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), token);
             }
-            return keys.get(0);
+            return key;
+        }
+        return null;
+    }
+
+    private void update(String sql, Object... args) {
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            int i = 1;
+            for (Object arg : args) {
+                statement.setObject(i++, arg);
+            }
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private <T> T query(Class<T> clazz, String sql, Object... args) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            int i = 1;
+            for (Object arg : args) {
+                statement.setObject(i++, arg);
+            }
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Object obj = resultSet.getObject(1);
+                if (clazz.isInstance(obj)) {
+                    return (T)obj;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
