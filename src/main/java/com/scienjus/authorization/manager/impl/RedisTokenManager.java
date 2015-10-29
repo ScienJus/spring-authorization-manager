@@ -1,10 +1,8 @@
 package com.scienjus.authorization.manager.impl;
 
 import com.scienjus.authorization.exception.MethodNotSupportException;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
-
-import java.util.concurrent.TimeUnit;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 /**
  * @author XieEnlong
@@ -15,10 +13,10 @@ public class RedisTokenManager extends AbstractTokenManager {
     private static final String REDIS_KEY_PREFIX = "AUTHORIZATION_KEY_";
     private static final String REDIS_TOKEN_PREFIX = "AUTHORIZATION_TOKEN_";
 
-    protected StringRedisTemplate redis;
+    protected JedisPool jedisPool;
 
-    public void setRedis(JedisConnectionFactory redis) {
-        this.redis = new StringRedisTemplate(redis);
+    public void setJedisPool(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
     }
 
     @Override
@@ -28,8 +26,7 @@ public class RedisTokenManager extends AbstractTokenManager {
         }
         String token = getToken(key);
         if (token != null) {
-            redis.delete(formatKey(key));
-            redis.delete(formatToken(token));
+            delete(formatKey(key), formatToken(token));
         }
     }
 
@@ -37,17 +34,17 @@ public class RedisTokenManager extends AbstractTokenManager {
     public void delRelationshipByToken(String token) {
         if (singleSignOn) {
             String key = getKey(token);
-            redis.delete(formatKey(key));
+            delete(formatKey(key), formatToken(token));
         }
-        redis.delete(formatToken(token));
+        delete(formatToken(token));
     }
 
     @Override
     public void createRelationship(String key, String token) {
         if (singleSignOn) {
-            redis.boundValueOps(formatKey(key)).set(token, tokenExpireSeconds, TimeUnit.SECONDS);
+            set(formatKey(key), token, tokenExpireSeconds);
         }
-        redis.boundValueOps(formatToken(token)).set(key, tokenExpireSeconds, TimeUnit.SECONDS);
+        set(formatToken(token), key, tokenExpireSeconds);
     }
 
     @Override
@@ -55,20 +52,68 @@ public class RedisTokenManager extends AbstractTokenManager {
         if (token == null) {
             return null;
         }
-        String key = redis.boundValueOps(formatToken(token)).get();
+        String key = get(formatToken(token));
         if (key != null) {
             if (singleSignOn) {
-                redis.expire(formatKey(key), tokenExpireSeconds, TimeUnit.SECONDS);
+                expire(formatKey(key), tokenExpireSeconds);
             }
             if (flushExpireAfterOperate) {
-                redis.expire(formatToken(token), tokenExpireSeconds, TimeUnit.SECONDS);
+                expire(formatToken(token), tokenExpireSeconds);
             }
         }
         return key;
     }
 
+    private String get(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.get(key);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    private String set(String key, String value, int expireSeconds) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.setex(key, expireSeconds, value);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    private void expire(String key, int seconds) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.expire(key, seconds);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    private void delete(String... keys) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.del(keys);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     private String getToken(String key) {
-        return redis.boundValueOps(formatKey(key)).get();
+        return get(formatKey(key));
     }
 
     private String formatKey(String key) {

@@ -57,11 +57,6 @@ mvn install:install-file
   </dependency>
   <!--Redis依赖，只有在使用RedisTokenManager时才需要-->
   <dependency>
-    <groupId>org.springframework.data</groupId>
-    <artifactId>spring-data-redis</artifactId>
-    <version>1.6.0.RELEASE</version>
-  </dependency>
-  <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
     <version>2.7.3</version>
@@ -90,15 +85,25 @@ mvn install:install-file
 将Jedis客户端注入到`RedisTokenManager`：
 
 ```
-<!--Redis客户端-->
-<bean id="redis" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:hostName="127.0.0.1" p:port="6379" p:password="redis"/>
+<!--Redis配置-->
+<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+</bean>
+
+<!--Redis连接池-->
+<bean id = "jedisPool" class="redis.clients.jedis.JedisPool">
+  <constructor-arg index="0" ref="jedisPoolConfig"/>
+  <constructor-arg index="1" value="${redis.host}"/>
+  <constructor-arg index="2" value="${redis.port}" type="int"/>
+  <constructor-arg index="3" value="${redis.timeout}" type="int"/>
+  <constructor-arg index="4" value="${redis.password}"/>
+</bean>
 
 <!--管理验证信息的bean-->
 <bean id="tokenManager" class="com.scienjus.authorization.manager.impl.RedisTokenManager">
        <!--Token失效时间-->
        <property name="tokenExpireSeconds" value="3600" />
        <!--Redis客户端-->
-       <property name="redis" ref="redis" />
+       <property name="jedisPool" ref="jedisPool" />
 </bean>
 ```
 

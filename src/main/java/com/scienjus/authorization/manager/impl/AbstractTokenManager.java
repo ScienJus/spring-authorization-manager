@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 public abstract class AbstractTokenManager implements TokenManager {
 
-    protected long tokenExpireSeconds = 3600;
+    protected int tokenExpireSeconds = 3600;
 
     protected boolean singleSignOn = true;
 
     protected boolean flushExpireAfterOperate = true;
 
-    public void setTokenExpireSeconds(long tokenExpireSeconds) {
+    public void setTokenExpireSeconds(int tokenExpireSeconds) {
         this.tokenExpireSeconds = tokenExpireSeconds;
     }
 
