@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 /**
- * 自定义拦截器，判断此次请求是否有权限
+ * 自定义拦截器，对请求进行身份验证
  * @see com.scienjus.authorization.annotation.Authorization
  * @author ScienJus
  * @date 2015/7/30.

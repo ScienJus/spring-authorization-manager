@@ -1,11 +1,11 @@
 package com.scienjus.authorization.manager.impl;
 
-import com.scienjus.authorization.exception.MethodNotSupportException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 /**
- * @author XieEnlong
+ * 使用Redis存储Token
+ * @author ScienJus
  * @date 2015/10/26.
  */
 public class RedisTokenManager extends AbstractTokenManager {
@@ -20,10 +20,7 @@ public class RedisTokenManager extends AbstractTokenManager {
     }
 
     @Override
-    public void delRelationshipByKey(String key) {
-        if (!singleSignOn) {
-            throw new MethodNotSupportException("非单点登录时无法调用该方法");
-        }
+    public void delSingleRelationshipByKey(String key) {
         String token = getToken(key);
         if (token != null) {
             delete(formatKey(key), formatToken(token));
@@ -32,7 +29,7 @@ public class RedisTokenManager extends AbstractTokenManager {
 
     @Override
     public void delRelationshipByToken(String token) {
-        if (singleSignOn) {
+        if (singleTokenWithUser) {
             String key = getKey(token);
             delete(formatKey(key), formatToken(token));
         }
@@ -40,28 +37,32 @@ public class RedisTokenManager extends AbstractTokenManager {
     }
 
     @Override
-    public void createRelationship(String key, String token) {
-        if (singleSignOn) {
-            set(formatKey(key), token, tokenExpireSeconds);
+    protected void createMultipleRelationship(String key, String token) {
+        String oldToken = get(formatKey(key));
+        if (oldToken != null) {
+            delete(formatToken(oldToken));
         }
+        set(formatToken(token), key, tokenExpireSeconds);
+        set(formatKey(key), token, tokenExpireSeconds);
+    }
+
+    @Override
+    protected void createSingleRelationship(String key, String token) {
         set(formatToken(token), key, tokenExpireSeconds);
     }
 
     @Override
-    public String getKey(String token) {
-        if (token == null) {
-            return null;
-        }
+    public String getKeyByToken(String token) {
         String key = get(formatToken(token));
-        if (key != null) {
-            if (singleSignOn) {
-                expire(formatKey(key), tokenExpireSeconds);
-            }
-            if (flushExpireAfterOperate) {
-                expire(formatToken(token), tokenExpireSeconds);
-            }
-        }
         return key;
+    }
+
+    @Override
+    protected void flushExpireAfterOperation(String key, String token) {
+        if (singleTokenWithUser) {
+            expire(formatKey(key), tokenExpireSeconds);
+        }
+        expire(formatToken(token), tokenExpireSeconds);
     }
 
     private String get(String key) {
