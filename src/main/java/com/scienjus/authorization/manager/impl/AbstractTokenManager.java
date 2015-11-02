@@ -39,6 +39,10 @@ public abstract class AbstractTokenManager implements TokenManager {
         delSingleRelationshipByKey(key);
     }
 
+    /**
+     * 一个用户只能绑定一个Token时通过Key删除关联关系
+     * @param key
+     */
     protected abstract void delSingleRelationshipByKey(String key);
 
     @Override
@@ -75,8 +79,18 @@ public abstract class AbstractTokenManager implements TokenManager {
         return null;
     }
 
+    /**
+     * 通过Token获得Key
+     * @param token
+     * @return
+     */
     protected abstract String getKeyByToken(String token);
 
+    /**
+     * 在操作后刷新Token的过期时间
+     * @param key
+     * @param token
+     */
     protected abstract void flushExpireAfterOperation(String key, String token);
 
     @Override

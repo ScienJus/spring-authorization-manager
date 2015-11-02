@@ -17,11 +17,18 @@ import java.lang.reflect.Method;
  */
 public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
+    /**
+     * 存放登录用户模型Key的Request Key
+     */
     public static final String REQUEST_CURRENT_KEY = "REQUEST_CURRENT_KEY";
 
+    //管理身份验证操作的对象
     private TokenManager manager;
+    //存放鉴权信息的Header名称，默认是Authorization
     private String httpHeaderName = "Authorization";
+    //鉴权信息的无用前缀，默认为空
     private String httpHeaderPrefix = "";
+    //鉴权失败后返回的错误信息，默认为401 unauthorized
     private String unauthorizedErrorMessage = "401 unauthorized";
 
     public void setManager(TokenManager manager) {

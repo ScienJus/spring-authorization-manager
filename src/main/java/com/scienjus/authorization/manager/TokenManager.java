@@ -3,7 +3,7 @@ package com.scienjus.authorization.manager;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 对Token进行操作的接口
+ * 对Token进行管理的接口
  * @author ScienJus
  * @date 2015/7/31.
  */

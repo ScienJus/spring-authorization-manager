@@ -10,11 +10,29 @@ import java.sql.*;
  */
 public class DBTokenManager extends AbstractTokenManager {
 
+    /**
+     * 数据源
+     */
     protected DataSource dataSource;
 
+    /**
+     * 存放鉴权信息的表名
+     */
     protected String tableName;
+
+    /**
+     * 存放Key的字段名
+     */
     protected String keyColumnName;
+
+    /**
+     * 存放Token的字段名
+     */
     protected String tokenColumnName;
+
+    /**
+     * 存放过期时间的字段名
+     */
     protected String expireAtColumnName;
 
     public void setDataSource(DataSource dataSource) {

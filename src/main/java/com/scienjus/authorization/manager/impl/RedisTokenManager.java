@@ -10,9 +10,19 @@ import redis.clients.jedis.JedisPool;
  */
 public class RedisTokenManager extends AbstractTokenManager {
 
+    /**
+     * Redis中Key的前缀
+     */
     private static final String REDIS_KEY_PREFIX = "AUTHORIZATION_KEY_";
+
+    /**
+     * Redis中Token的前缀
+     */
     private static final String REDIS_TOKEN_PREFIX = "AUTHORIZATION_TOKEN_";
 
+    /**
+     * Jedis连接池
+     */
     protected JedisPool jedisPool;
 
     public void setJedisPool(JedisPool jedisPool) {

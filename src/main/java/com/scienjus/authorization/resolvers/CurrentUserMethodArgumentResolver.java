@@ -19,7 +19,10 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
  */
 public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
+    //用户模型的类名
     private String userModelClass;
+
+    //通过Key获得用户模型的实现类
     private UserModelRepository userModelRepository;
 
     public void setUserModelClass(String userModelClass) {

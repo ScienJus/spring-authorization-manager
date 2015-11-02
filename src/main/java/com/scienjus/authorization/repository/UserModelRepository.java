@@ -7,5 +7,10 @@ package com.scienjus.authorization.repository;
  */
 public interface UserModelRepository {
 
+    /**
+     * 通过Key获得用户模型
+     * @param key
+     * @return
+     */
     Object getCurrentUser(String key);
 }
