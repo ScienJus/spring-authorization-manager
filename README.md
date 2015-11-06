@@ -207,3 +207,9 @@ public class TokenController {
 需要注意的是，拥有`@CurrentUser`参数的方法，可以没有`@Authorization`注解，此时如果请求未登录，该参数会为`null`。
 
 但是如果想要使用`CurrentUserMethodArgumentResolver`则必须配置`AuthorizationInterceptor`。
+
+###帮助
+
+源码分析见我的这篇[博客][http://www.scienjus.com/restful-token-authorization/]
+
+一个简单的[Demo][https://github.com/ScienJus/spring-authorization-manager-demo/]
