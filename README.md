@@ -210,6 +210,9 @@ public class TokenController {
 
 ###帮助
 
-源码分析见我的这篇[博客][http://www.scienjus.com/restful-token-authorization/]
+源码分析见我的这篇[博客][1]
 
-一个简单的[Demo][https://github.com/ScienJus/spring-authorization-manager-demo/]
+一个简单的[Demo][2]
+
+[1]:http://www.scienjus.com/restful-token-authorization/
+[2]:https://github.com/ScienJus/spring-authorization-manager-demo/
