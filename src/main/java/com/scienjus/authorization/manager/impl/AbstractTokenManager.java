@@ -76,7 +76,7 @@ public abstract class AbstractTokenManager implements TokenManager {
         if (key != null && flushExpireAfterOperation) {
             flushExpireAfterOperation(key, token);
         }
-        return null;
+        return key;
     }
 
     /**
