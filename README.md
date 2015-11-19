@@ -167,6 +167,9 @@ public class TokenController {
 
 }
 ```
+
+也可以直接在Controller类上加上该注解，这将会使该Controller中的所有方法都需要进行身份验证。
+
 **配置获得当前登录用户的解析器**
 
 首先需要实现`UserModelRepository`接口的`getCurrentUser`方法，可以通过Key得到对应的用户对象，然后配置一个解析器，并将其注入到`CurrentUserMethodArgumentResolver`：
