@@ -47,7 +47,7 @@ public class RedisTokenManager extends AbstractTokenManager {
     }
 
     @Override
-    protected void createMultipleRelationship(String key, String token) {
+    protected void createSingleRelationship(String key, String token) {
         String oldToken = get(formatKey(key));
         if (oldToken != null) {
             delete(formatToken(oldToken));
@@ -57,7 +57,7 @@ public class RedisTokenManager extends AbstractTokenManager {
     }
 
     @Override
-    protected void createSingleRelationship(String key, String token) {
+    protected void createMultipleRelationship(String key, String token) {
         set(formatToken(token), key, tokenExpireSeconds);
     }
 
