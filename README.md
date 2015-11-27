@@ -211,6 +211,17 @@ public class TokenController {
 
 但是如果想要使用`CurrentUserMethodArgumentResolver`则必须配置`AuthorizationInterceptor`。
 
+###更新日志
+
+**2015-11-27**
+
+修改了拦截器的部分代码，内容为：
+
+1. 将返回鉴权失败信息的输出流从`response.getWriter`改为了`response.getOutputStream`，因为`@ResponseBody`默认也是用的后者，便于统一监控返回内容。
+2. 可以通过配置文件自定义鉴权失败的http状态码了，默认为401（unauthorized）。
+3. 将返回鉴权失败的`Content-Type`设置为`application/json`了，否则可能会导致iOS的网络库`AFNetWorking`解析报错。
+
+
 ###帮助
 
 源码分析见我的这篇[博客][1]
