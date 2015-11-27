@@ -26,12 +26,18 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
     //管理身份验证操作的对象
     private TokenManager manager;
+
     //存放鉴权信息的Header名称，默认是Authorization
     private String httpHeaderName = "Authorization";
+
     //鉴权信息的无用前缀，默认为空
     private String httpHeaderPrefix = "";
+
     //鉴权失败后返回的错误信息，默认为401 unauthorized
     private String unauthorizedErrorMessage = "401 unauthorized";
+
+    //鉴权失败后返回的HTTP错误码，默认为401
+    private int unauthorizedErrorCode = HttpServletResponse.SC_UNAUTHORIZED;
 
     public void setManager(TokenManager manager) {
         this.manager = manager;
@@ -47,6 +53,10 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
     public void setUnauthorizedErrorMessage(String unauthorizedErrorMessage) {
         this.unauthorizedErrorMessage = unauthorizedErrorMessage;
+    }
+
+    public void setUnauthorizedErrorCode(int unauthorizedErrorCode) {
+        this.unauthorizedErrorCode = unauthorizedErrorCode;
     }
 
     public boolean preHandle(HttpServletRequest request,
@@ -74,13 +84,13 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         //如果验证token失败，并且方法注明了Authorization，返回401错误
         if (method.getAnnotation(Authorization.class) != null   //查看方法上是否有注解
                 || handlerMethod.getBeanType().getAnnotation(Authorization.class) != null) {    //查看方法所在的Controller是否有注解
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(unauthorizedErrorCode);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
             writer.write(unauthorizedErrorMessage);
             writer.close();
             return false;
         }
-        //为了防止以某种直接在REQUEST_CURRENT_KEY写入key，将其设为null
+        //为了防止以恶意操作直接在REQUEST_CURRENT_KEY写入key，将其设为null
         request.setAttribute(REQUEST_CURRENT_KEY, null);
         return true;
     }
