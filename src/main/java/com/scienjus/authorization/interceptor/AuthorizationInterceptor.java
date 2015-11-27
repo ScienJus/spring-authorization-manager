@@ -2,6 +2,7 @@ package com.scienjus.authorization.interceptor;
 
 import com.scienjus.authorization.annotation.Authorization;
 import com.scienjus.authorization.manager.TokenManager;
+import org.springframework.http.MediaType;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -85,6 +86,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         if (method.getAnnotation(Authorization.class) != null   //查看方法上是否有注解
                 || handlerMethod.getBeanType().getAnnotation(Authorization.class) != null) {    //查看方法所在的Controller是否有注解
             response.setStatus(unauthorizedErrorCode);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
             writer.write(unauthorizedErrorMessage);
             writer.close();
