@@ -7,6 +7,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 
 /**
@@ -73,9 +75,9 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         if (method.getAnnotation(Authorization.class) != null   //查看方法上是否有注解
                 || handlerMethod.getBeanType().getAnnotation(Authorization.class) != null) {    //查看方法所在的Controller是否有注解
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setCharacterEncoding("gbk");
-            response.getWriter().write(unauthorizedErrorMessage);
-            response.getWriter().close();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+            writer.write(unauthorizedErrorMessage);
+            writer.close();
             return false;
         }
         //为了防止以某种直接在REQUEST_CURRENT_KEY写入key，将其设为null
