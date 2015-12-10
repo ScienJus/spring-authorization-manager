@@ -4,12 +4,12 @@
 
 ###功能简述
 
-1. 对每个请求进行身份验证，如果身份验证不通过则返回错误`401`
-2. 通过鉴权信息获得当前登录的用户
+1. 对每个请求进行身份验证，如果身份验证不失败直接返回错误信息（可以自定义错误信息和Http状态码）
+2. 通过鉴权信息获得当前登录的用户，并自动注入到Controller的方法中
 
 ###使用方法
 
-由于这个库还没有提交到Maven的中央仓库，所以需要手动将其导入到你的私人仓库中，jar包可以在`/lib`文件夹下找到，或者下载源码使用`mvn package`打包。
+由于这个库并没有提交到Maven的中央仓库，所以需要手动将其导入到你的私人仓库中，jar包可以在`/lib`文件夹下找到，或者`fork`源码使用`mvn package`打包。
 
 ```
 mvn install:install-file  
@@ -20,7 +20,7 @@ mvn install:install-file
 -Dfile=/path/to/jar/spring-authorization-manager.jar
 ```
 
-所有依赖库，我相信大部分库已经存在于你的项目中了：
+所有依赖库，相信大部分已经存在于你的项目中了：
 
 ```
 <dependencies>
@@ -127,7 +127,7 @@ mvn install:install-file
        <property name="keyColumnName" value="username" />
        <!--存储Token的字段名-->
        <property name="tokenColumnName" value="token" />
-       <!--存储过期时间的字段名-->
+       <!--存储Token过期时间的字段名-->
        <property name="expireAtColumnName" value="expire_at" />
 </bean>
 ```
