@@ -224,6 +224,8 @@ public class TokenController {
 
 ###帮助
 
+如果您在使用中遇到了问题，可以给我提 Issues，或是通过邮件联系我，我的邮箱是：`i@scienjus.com`。
+
 源码分析见我的这篇[博客][1]
 
 一个简单的[Demo][2]
