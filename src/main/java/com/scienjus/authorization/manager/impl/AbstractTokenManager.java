@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public abstract class AbstractTokenManager implements TokenManager {
 
-    protected int tokenExpireSeconds = 3600;
+    protected int tokenExpireSeconds = 7 * 24 * 3600;
 
     protected boolean singleTokenWithUser = true;
 
