@@ -63,8 +63,7 @@ public class RedisTokenManager extends AbstractTokenManager {
 
     @Override
     public String getKeyByToken(String token) {
-        String key = get(formatToken(token));
-        return key;
+        return get(formatToken(token));
     }
 
     @Override

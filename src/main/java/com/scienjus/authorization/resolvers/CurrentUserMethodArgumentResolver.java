@@ -20,13 +20,17 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     //用户模型的类名
-    private String userModelClass;
+    private Class<?> userModelClass;
 
     //通过Key获得用户模型的实现类
     private UserModelRepository userModelRepository;
 
-    public void setUserModelClass(String userModelClass) {
-        this.userModelClass = userModelClass;
+    public void setUserModelClass(String className) {
+        try {
+            this.userModelClass = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setUserModelRepository(UserModelRepository userModelRepository) {
@@ -35,18 +39,9 @@ public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentR
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        Class clazz;
-        try {
-            clazz = Class.forName(userModelClass);
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
         //如果参数类型是User并且有CurrentUser注解则支持
-        if (parameter.getParameterType().isAssignableFrom(clazz) &&
-                parameter.hasParameterAnnotation(CurrentUser.class)) {
-            return true;
-        }
-        return false;
+        return parameter.getParameterType().isAssignableFrom(userModelClass) &&
+                parameter.hasParameterAnnotation(CurrentUser.class);
     }
 
     @Override
