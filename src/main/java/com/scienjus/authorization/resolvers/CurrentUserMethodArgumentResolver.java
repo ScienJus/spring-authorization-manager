@@ -17,23 +17,27 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
  * @author ScienJus
  * @date 2015/7/31.
  */
-public class CurrentUserMethodArgumentResolver implements HandlerMethodArgumentResolver {
+public class CurrentUserMethodArgumentResolver<T> implements HandlerMethodArgumentResolver {
 
     //用户模型的类名
-    private Class<?> userModelClass;
+    private Class<T> userModelClass;
 
     //通过Key获得用户模型的实现类
-    private UserModelRepository userModelRepository;
+    private UserModelRepository<T> userModelRepository;
 
     public void setUserModelClass(String className) {
         try {
-            this.userModelClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
+            this.userModelClass = (Class<T>) Class.forName(className);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void setUserModelRepository(UserModelRepository userModelRepository) {
+    public void setUserModelClass(Class<T> clazz) {
+        this.userModelClass = clazz;
+    }
+
+    public void setUserModelRepository(UserModelRepository<T> userModelRepository) {
         this.userModelRepository = userModelRepository;
     }
 

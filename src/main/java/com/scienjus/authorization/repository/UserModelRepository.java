@@ -5,12 +5,12 @@ package com.scienjus.authorization.repository;
  * @author ScienJus
  * @date 2015/10/26.
  */
-public interface UserModelRepository {
+public interface UserModelRepository<T> {
 
     /**
      * 通过Key获得用户模型
      * @param key
      * @return
      */
-    Object getCurrentUser(String key);
+    T getCurrentUser(String key);
 }
