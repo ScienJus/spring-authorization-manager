@@ -89,8 +89,7 @@ public class DBTokenManager extends AbstractTokenManager {
     @Override
     public String getKeyByToken(String token) {
         String sql = String.format("select %s from %s where %s = ? and %s > ? limit 1", keyColumnName, tableName, tokenColumnName, expireAtColumnName);
-        String key = query(String.class, sql, token, new Timestamp(System.currentTimeMillis()));
-        return key;
+        return query(String.class, sql, token, new Timestamp(System.currentTimeMillis()));
     }
 
     @Override
@@ -101,7 +100,7 @@ public class DBTokenManager extends AbstractTokenManager {
 
     private void update(String sql, Object... args) {
         try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             int i = 1;
             for (Object arg : args) {
                 statement.setObject(i++, arg);

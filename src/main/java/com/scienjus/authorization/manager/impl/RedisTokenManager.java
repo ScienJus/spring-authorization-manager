@@ -42,8 +42,9 @@ public class RedisTokenManager extends AbstractTokenManager {
         if (singleTokenWithUser) {
             String key = getKey(token);
             delete(formatKey(key), formatToken(token));
+        } else {
+            delete(formatToken(token));
         }
-        delete(formatToken(token));
     }
 
     @Override
@@ -75,50 +76,26 @@ public class RedisTokenManager extends AbstractTokenManager {
     }
 
     private String get(String key) {
-        Jedis jedis = null;
-        try {
-            jedis = jedisPool.getResource();
+        try (Jedis jedis = jedisPool.getResource()) {
             return jedis.get(key);
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
         }
     }
 
     private String set(String key, String value, int expireSeconds) {
-        Jedis jedis = null;
-        try {
-            jedis = jedisPool.getResource();
+        try (Jedis jedis = jedisPool.getResource()) {
             return jedis.setex(key, expireSeconds, value);
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
         }
     }
 
     private void expire(String key, int seconds) {
-        Jedis jedis = null;
-        try {
-            jedis = jedisPool.getResource();
+        try (Jedis jedis = jedisPool.getResource()) {
             jedis.expire(key, seconds);
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
         }
     }
 
     private void delete(String... keys) {
-        Jedis jedis = null;
-        try {
-            jedis = jedisPool.getResource();
+        try (Jedis jedis = jedisPool.getResource()) {
             jedis.del(keys);
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
         }
     }
 
