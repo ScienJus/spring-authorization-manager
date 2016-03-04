@@ -30,7 +30,7 @@ public class RedisTokenManager extends AbstractTokenManager {
     }
 
     @Override
-    public void delSingleRelationshipByKey(String key) {
+    protected void delSingleRelationshipByKey(String key) {
         String token = getToken(key);
         if (token != null) {
             delete(formatKey(key), formatToken(token));
@@ -63,7 +63,7 @@ public class RedisTokenManager extends AbstractTokenManager {
     }
 
     @Override
-    public String getKeyByToken(String token) {
+    protected String getKeyByToken(String token) {
         return get(formatToken(token));
     }
 
