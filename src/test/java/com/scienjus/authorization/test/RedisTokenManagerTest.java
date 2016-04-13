@@ -1,9 +1,14 @@
 package com.scienjus.authorization.test;
 
+import com.lordofthejars.nosqlunit.redis.ManagedRedis;
+import com.lordofthejars.nosqlunit.redis.RedisRule;
+import com.scienjus.authorization.manager.TokenManager;
 import com.scienjus.authorization.manager.impl.RedisTokenManager;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -18,10 +23,19 @@ import static org.junit.Assert.*;
  */
 public class RedisTokenManagerTest {
 
+    static {
+        System.setProperty("REDIS_HOME", "/usr/local/redis");
+    }
+
+    @ClassRule
+    public static ManagedRedis managedRedis = ManagedRedis.ManagedRedisRuleBuilder.newManagedRedisRule().build();
+
+    @Rule
+    public RedisRule redisRule = RedisRule.RedisRuleBuilder.newRedisRule().defaultManagedRedis();
 
     private static JedisPool jedisPool;
 
-    private RedisTokenManager tokenManager;
+    private TokenManager tokenManager;
 
     private static final String KEY = "key";
 
@@ -39,8 +53,9 @@ public class RedisTokenManagerTest {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.flushAll();
         }
-        tokenManager = new RedisTokenManager();
-        tokenManager.setJedisPool(jedisPool);
+        RedisTokenManager redisTokenManager = new RedisTokenManager();
+        redisTokenManager.setJedisPool(jedisPool);
+        this.tokenManager = redisTokenManager;
     }
 
     @Test
@@ -81,7 +96,7 @@ public class RedisTokenManagerTest {
 
     @Test
     public void testMultipleRelationship() {
-        tokenManager.setSingleTokenWithUser(false);
+        ((RedisTokenManager) tokenManager).setSingleTokenWithUser(false);
 
         tokenManager.createRelationship(KEY, TOKEN);
 
