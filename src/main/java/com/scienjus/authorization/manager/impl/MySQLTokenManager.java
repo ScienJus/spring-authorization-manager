@@ -8,7 +8,7 @@ import java.sql.*;
  * @author ScienJus
  * @date 2015/10/27.
  */
-public class DBTokenManager extends AbstractTokenManager {
+public class MySQLTokenManager extends AbstractTokenManager {
 
     /**
      * 数据源
@@ -77,7 +77,7 @@ public class DBTokenManager extends AbstractTokenManager {
     protected void createSingleRelationship(String key, String token) {
         String select = String.format("select count(*) from %s where %s = ?", tableName, keyColumnName);
         Number count = query(Number.class, select, key);
-        if (count.intValue() > 0) {
+        if (count != null && count.intValue() > 0) {
             String sql = String.format("update %s set %s = ?, %s = ? where %s = ?", tableName, tokenColumnName, expireAtColumnName, keyColumnName);
             update(sql, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), key);
         } else {

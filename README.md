@@ -1,13 +1,13 @@
-#Spring Authorization Manager
+# Spring Authorization Manager
 
 为Api服务端添加简单的Token鉴权功能，基于Spring MVC
 
-###功能简述
+### 功能简述
 
-1. 对每个请求进行身份验证，如果身份验证不失败直接返回错误信息（可以自定义错误信息和Http状态码）
+1. 对每个请求进行身份验证，如果身份验证失败直接返回错误信息（可以自定义错误信息和Http状态码）
 2. 通过鉴权信息获得当前登录的用户，并自动注入到Controller的方法中
 
-###使用方法
+### 使用方法
 
 仓库：
 
@@ -37,52 +37,44 @@
 ```
 <dependencies>
   <dependency>
-  <groupId>com.scienjus</groupId>
-  <artifactId>spring-authorization-manager</artifactId>
-  <version>1.0-SNAPSHOT</version>
+	  <groupId>com.scienjus</groupId>
+	  <artifactId>spring-authorization-manager</artifactId>
+	  <version>1.0-SNAPSHOT</version>
   </dependency>
   <!--Spring MVC依赖-->
   <dependency>
     <groupId>org.springframework</groupId>
     <artifactId>spring-webmvc</artifactId>
-    <version>4.2.2.RELEASE</version>
   </dependency>
   <dependency>
     <groupId>org.springframework</groupId>
     <artifactId>spring-context</artifactId>
-    <version>4.2.2.RELEASE</version>
   </dependency>
   <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-core</artifactId>
-    <version>2.6.3</version>
   </dependency>
   <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
-    <version>2.6.3</version>
   </dependency>
   <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>javax.servlet-api</artifactId>
-    <version>3.1.0</version>
   </dependency>
   <!--Redis依赖，只有在使用RedisTokenManager时才需要-->
   <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
-    <version>2.7.3</version>
   </dependency>
-  <!--数据库依赖，只有在使用DBTokenManager时才需要-->
+  <!--数据库依赖，只有在使用MySQLTokenManager时才需要-->
   <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
-    <version>5.1.37</version>
   </dependency>
   <dependency>
     <groupId>commons-dbcp</groupId>
     <artifactId>commons-dbcp</artifactId>
-    <version>1.4</version>
   </dependency>
 </dependencies>
 ```
@@ -114,9 +106,9 @@
 </bean>
 ```
 
-**使用Database存储Token**
+**使用MySQL存储Token**
 
-只需要将`RedisTokenManager`替换成`DBTokenManager`，并将数据源注入进去：
+只需要将`RedisTokenManager`替换成`MySQLTokenManager`，并将数据源注入进去：
 
 ```
 <!--数据源-->
@@ -248,3 +240,5 @@ public class TokenController {
 
 [1]:http://www.scienjus.com/restful-token-authorization/
 [2]:https://github.com/ScienJus/spring-authorization-manager-demo/
+
+
