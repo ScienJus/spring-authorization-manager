@@ -34,12 +34,4 @@ public interface TokenManager {
      * @return
      */
     String getKey(String token);
-
-    /**
-     * 对原始token进行解密、解码、时间戳验证、url签名等一系列操作的扩展接口
-     * @param baseToken 原始token
-     * @param request   该次请求的request对象
-     * @return          存放映射关系的token
-     */
-    String decodeToken(String baseToken, HttpServletRequest request);
 }

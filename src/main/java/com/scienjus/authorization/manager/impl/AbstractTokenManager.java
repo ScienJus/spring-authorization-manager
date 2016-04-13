@@ -92,10 +92,4 @@ public abstract class AbstractTokenManager implements TokenManager {
      * @param token
      */
     protected abstract void flushExpireAfterOperation(String key, String token);
-
-    @Override
-    public String decodeToken(String baseToken, HttpServletRequest request) {
-        //不作处理
-        return baseToken;
-    }
 }
